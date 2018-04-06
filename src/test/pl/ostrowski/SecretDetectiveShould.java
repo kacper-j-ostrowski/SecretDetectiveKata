@@ -67,12 +67,6 @@ public class SecretDetectiveShould {
     }
 
     @Test
-    public void test_word_length() {
-        int l = secretDetective.resolveWordLength(triplets);
-        assertEquals(8, l);
-    }
-
-    @Test
     public void test_recover_correct_string() {
         String result = secretDetective.recoverSecret(triplets);
         assertEquals("whatisup", result);

@@ -9,7 +9,6 @@ public class SecretDetective {
 
         StringBuilder sb = new StringBuilder();
         char previous = 0;
-        int wordLength = resolveWordLength(triplets);
 
         for (int i=0; i<triplets.length; i++) {
             boolean found = true;
@@ -27,38 +26,27 @@ public class SecretDetective {
             }
         }
 
-        while (sb.length() < wordLength) {
-            int col = 0;
-            while (col < 2) {
-                for (int i = 0; i < triplets.length; i++) {
-                    if (triplets[i][col] == previous) {
-                        char[] candidates = getCandidates(previous, triplets);
-                        if (candidates.length > 1) {
-                            previous = getFirstLetterInOrder(candidates, triplets);
-                        } else {
-                            previous = candidates[0];
-                        }
-                        sb.append(previous);
-                        col = 0;
-                        break;
+        int col = 0;
+        while (col < 2) {
+            for (int i = 0; i < triplets.length; i++) {
+                if (triplets[i][col] == previous) {
+                    char[] candidates = getCandidates(previous, triplets);
+                    if (candidates.length > 1) {
+                        previous = getFirstLetterInOrder(candidates, triplets);
+                    } else {
+                        previous = candidates[0];
                     }
+                    sb.append(previous);
+                    col = 0;
+                    break;
                 }
-                col++;
             }
+            col++;
         }
 
         return sb.toString();
     }
 
-    public int resolveWordLength(char[][] triplets) {
-        HashSet<Character> uniqueLetters = new HashSet<>();
-        for(int i=0; i<triplets.length; i++) {
-            for(int col=0; col<3; col++) {
-                uniqueLetters.add(triplets[i][col]);
-            }
-        }
-        return uniqueLetters.size();
-    }
 
     public boolean isBefore(char charBefore, char charAfter, char[][] triplets) {
         int col = 0;
