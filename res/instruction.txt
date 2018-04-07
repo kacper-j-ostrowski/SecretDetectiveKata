@@ -4,4 +4,5 @@ A triplet here is defined as a sequence of three letters such that each letter o
 
 As a simplification, you may assume that no letter occurs more than once in the secret string.
 
-You can assume nothing about the triplets given to you other than that they are valid triplets and that they contain sufficient information to deduce the original string. In particular, this means that the secret string will never contain letters that do not occur in one of the triplets given to you.
+You can assume nothing about the triplets given to you other than that they are valid triplets and that they contain sufficient information to deduce the original string.
+In particular, this means that the secret string will never contain letters that do not occur in one of the triplets given to you.

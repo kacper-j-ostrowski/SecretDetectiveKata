@@ -1,8 +1,52 @@
 package main.pl.ostrowski;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class SecretDetective {
+
+
+    public HashMap<Character, Set<Character>> getGraphStructure(char[][] triplets) {
+        HashMap<Character, Set<Character>> graph = new HashMap<>();
+            for(int i=0; i<triplets.length; i++) {
+                if(!graph.containsKey(triplets[i][0])) {
+                    graph.put(triplets[i][0], new HashSet<>());
+                }
+                if(!graph.containsKey(triplets[i][1])) {
+                    graph.put(triplets[i][1], new HashSet<>());
+                }
+                graph.get(triplets[i][0]).add(triplets[i][1]);
+                graph.get(triplets[i][1]).add(triplets[i][2]);
+            }
+        return graph;
+    }
+
+
+    public Character findLastNode(HashMap<Character, Set<Character>> graph) {
+        for(Map.Entry<Character, Set<Character>> e : graph.entrySet()) {
+            if(e.getValue().size() == 0) {
+                return e.getKey();
+            }
+            for(Character c : e.getValue()) {
+                if(!graph.containsKey(c)) {
+                    return c;
+                }
+            }
+        }
+        throw new RuntimeException("No end of graph");
+    }
+
+
+    public void removeNodeFromGraph(Character node, HashMap<Character, Set<Character>> graph) {
+        for (Map.Entry<Character, Set<Character>> e : graph.entrySet()) {
+            if(e.getValue().contains(node)) {
+                e.getValue().remove(node);
+            }
+        }
+        graph.remove(node);
+    }
 
 
     public String recoverSecret(char[][] triplets) {
@@ -10,102 +54,14 @@ public class SecretDetective {
         StringBuilder sb = new StringBuilder();
         char previous = 0;
 
-        for (int i=0; i<triplets.length; i++) {
-            boolean found = true;
-            char potentialFirst = triplets[i][0];
-            for (int j=0; j<triplets.length; j++) {
-                if(potentialFirst == triplets[j][1]) {
-                    found = false;
-                    break;
-                }
-            }
-            if(found) {
-                sb.append(potentialFirst);
-                previous = potentialFirst;
-                break;
-            }
+        HashMap<Character, Set<Character>> graph = getGraphStructure(triplets);
+
+        while(graph.size() > 0) {
+            Character c = findLastNode(graph);
+            sb.append(c);
+            removeNodeFromGraph(c, graph);
         }
 
-        int col = 0;
-        while (col < 2) {
-            for (int i = 0; i < triplets.length; i++) {
-                if (triplets[i][col] == previous) {
-                    char[] candidates = getCandidates(previous, triplets);
-                    if (candidates.length > 1) {
-                        previous = getFirstLetterInOrder(candidates, triplets);
-                    } else {
-                        previous = candidates[0];
-                    }
-                    sb.append(previous);
-                    col = 0;
-                    break;
-                }
-            }
-            col++;
-        }
-
-        return sb.toString();
-    }
-
-
-    public boolean isBefore(char charBefore, char charAfter, char[][] triplets) {
-        int col = 0;
-        while(col < 3) {
-            for(int i=0; i<triplets.length; i++) {
-                if(triplets[i][col] == charBefore) {
-                    if(col == 0 && (triplets[i][1] == charAfter || triplets[i][2] == charAfter)) {
-                        return true;
-                    }
-                    if (col == 1 && triplets[i][2] == charAfter) {
-                        return true;
-                    }
-                    if (col == 1 && triplets[i][0] == charAfter) {
-                        return false;
-                    }
-                    if (col == 2 && (triplets[i][0] == charAfter || triplets[i][1] == charAfter)) {
-                        return false;
-                    }
-                }
-            }
-            col++;
-        }
-        return false;
-    }
-
-
-    public char getFirstLetterInOrder(char[] letters, char[][] triplets) {
-
-        if(letters.length == 0) {
-            return 0;
-        }
-
-        char potentialFirst = letters[0];
-        for(char l : letters) {
-            if(isBefore(l, potentialFirst, triplets)) {
-                potentialFirst = l;
-            }
-        }
-
-        return potentialFirst;
-    }
-
-
-    public char[] getCandidates(char previous, char[][] triplets) {
-        HashSet<Character> candidates = new HashSet<>();
-
-        int col = 0;
-        while (col < 2) {
-            for(int i=0; i<triplets.length; i++) {
-                if(triplets[i][col] == previous) {
-                    candidates.add(triplets[i][col+1]);
-                }
-            }
-            col++;
-        }
-        char[] result = new char[candidates.size()];
-        int i=0;
-        for(Character c : candidates)
-            result[i++] = c.charValue();
-        return result;
+        return sb.reverse().toString();
     }
 }
